@@ -1,0 +1,97 @@
+﻿@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="modal fade show" id="myModal" style="display: block; background-color: rgba(10, 10, 10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Добавить задание</h4>
+                <button type="button" class="btn btn-outline-danger" @onclick="@ModalCancel">✖</button>
+            </div>
+            <div class="modal-body">
+                <EditForm class="form-signin" OnSubmit="AddExOption" Model="exerciseOption">                    
+                      <div class="align-content-center">
+                            <label for="name">Номер опции</label>
+                        </div>
+                        <InputNumber id="name" type="int" @bind-Value="exerciseOption.OptionNumber" class="form-control"/>
+                        
+                        <div class="mb-3">
+                            <label for="name">Тип опции</label>
+                            <InputSelect id="type" type="text" @bind-Value="exerciseOption.Type" class="form-select"> 
+                                <option value="@OptionType.FillForm">Форма ввода</option>
+                                <option value="@OptionType.LoadFile">Загрузка файла</option>
+                                <option value="@OptionType.LoadImg">Загрузка изображения</option>
+                                <option value="@OptionType.LoadVideo">Загрузка видео</option>                                
+                            </InputSelect>                        
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name">Формат опции</label>
+                            <InputSelect id="type" type="text" @bind-Value="exerciseOption.Format" class="form-select"> 
+                                <option value="@FormatType.Nothing">Ничего</option>
+                                <option value="@FormatType.InputForm">Форма ввода</option>
+                                <option value="@FormatType.OneFilePerOption">Загрузка одного файла</option>
+                                <option value="@FormatType.MultipleFilesPerOption">Загрузка одного и более файлов</option>                                                              
+                            </InputSelect>                        
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name">Описание</label>
+                            <InputText id="name" type="text" @bind-Value="exerciseOption.Description" class="form-control" />
+                        </div>
+                    
+                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public Guid blockId { get; set; }
+    [Parameter]
+    public Guid exerciseId { get; set; }
+
+    public Lesson lesson = new Lesson();
+    public ExerciseBlock exerciseBlock = new ExerciseBlock();
+    public Exercise exercise = new Exercise();
+    public ExerciseOption exerciseOption = new ExerciseOption();
+
+    protected async override Task OnInitializedAsync()
+    {
+        lesson = await Http.GetFromJsonAsync<Lesson>($"https://localhost:7027/api/Lesson/{Id}");
+        exerciseBlock = lesson.ExerciseBlocks.FirstOrDefault(p => p.Id == blockId);
+        exercise = exerciseBlock.Exercises.FirstOrDefault(p => p.Id == exerciseId);
+
+    }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private async Task AddExOption()
+    {
+        exercise.Options.Add(exerciseOption);
+       var res = await Http.PutAsJsonAsync($"https://localhost:7027/api/Lesson/{Id}", lesson);
+        if (res.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"/edit/{Id}", true);
+        }
+    }
+}

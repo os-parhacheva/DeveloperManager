@@ -1,0 +1,101 @@
+﻿@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="modal fade show" id="myModal" style="display: block; background-color: rgba(10, 10, 10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Добавить модуль</h4>
+                <button type="button" class="btn btn-outline-danger" @onclick="@ModalCancel">✖</button>
+            </div>
+            <div class="modal-body">
+                <EditForm class="form-signin" OnSubmit="AddLesson" Model="_lesson">
+                    <div class="align-content-center">
+                        <label for="name">Название</label>
+                    </div>
+                    <InputText id="name" type="text" @bind-Value="_lesson.Name" class="form-control"/>
+                    <div class="align-content-center">
+                        <label for="name">Тип конкурса</label>
+                    </div>
+                    <InputSelect id="type" type="text" @bind-Value="_lesson.LessonType" class="form-select"> 
+                         <option value="0">Выбрать...</option>              
+                         <option value="@LessonType.TrainingModule">Учебный модуль в рамках дисциплины</option>
+                         <option value="@LessonType.LaboratoryPracticalModule">Лабораторно-практический модуль</option>
+                         <option value="@LessonType.LaboratoryWork">Лабораторная работа</option>
+                         <option value="@LessonType.PracticalWork">Практическая работа</option>
+                         <option value="@LessonType.Colloquium">Коллоквиум</option>
+                         <option value="@LessonType.CourseProject">Курсовой проект</option>
+                         <option value="@LessonType.CourseWork">Курсовая работа</option>
+                         <option value="@LessonType.ControlWork">Контрольная работа</option>
+                    </InputSelect>
+                    <div class="align-content-center">
+                        <label for="name">Номер модуля</label>
+                    </div>
+                    <InputNumber id="name" type="int" @bind-Value="_lesson.LessonNumber" class="form-control"/>
+
+                     <div class="align-content-center">
+                        <label for="name">Коэффициент сложности</label>
+                    </div>
+                    <InputNumber id="name" type="int" @bind-Value="_lesson.LaborIntensity" class="form-control"/>
+
+                    <div class="align-content-center">
+                        <label for="name">Блок заданий</label>
+                    </div>
+                    <InputCheckbox class="form-check-input"  @bind-Value="CheckBox1" />Задание на допуск <br />
+                    <InputCheckbox class="form-check-input"  @bind-Value="CheckBox2" />Задание на закрепление материала <br />
+                    <InputCheckbox class="form-check-input"  @bind-Value="CheckBox3" />Задание на защиту <br />
+                    <InputCheckbox class="form-check-input"  @bind-Value="CheckBox4" />Эксперимент <br />
+
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                    
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    //  [Parameter]
+    //  public  Lesson Lesson { get; set; } = new Lesson();
+
+    Lesson _lesson = new Lesson();
+
+    bool CheckBox1;
+    bool CheckBox2;
+    bool CheckBox3;
+    bool CheckBox4;
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private async Task AddLesson()
+    {
+        if (CheckBox1) _lesson.ExerciseBlocks.Add(new ExerciseBlock {SubType=SubType.Allowance });
+        if (CheckBox2) _lesson.ExerciseBlocks.Add(new ExerciseBlock {SubType=SubType.ControlExercise });
+        if (CheckBox3) _lesson.ExerciseBlocks.Add(new ExerciseBlock {SubType=SubType.ProtectionExercise });
+        if (CheckBox4) _lesson.ExerciseBlocks.Add(new ExerciseBlock {SubType=SubType.Experiment });
+
+        var respone = await Http.PostAsJsonAsync("https://localhost:7027/api/Lesson", _lesson);
+        if (respone.IsSuccessStatusCode)
+        {
+
+            _lesson = new Lesson();
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+
+    
+}

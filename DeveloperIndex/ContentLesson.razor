@@ -1,0 +1,142 @@
+﻿@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Редактирование Модуля</PageTitle>
+
+@if (AddBlockDialogOpen)
+{
+    <AddBlock OnClose="@OnAddDialogClose" Id="@Id" ></AddBlock>
+}
+@if (AddExerciseDialogOpen)
+{
+  <AddExercise OnClose="@OnAddDialogClose" Id="@Id" blockId="@blockId"></AddExercise>
+}
+
+
+
+<div style="display: flex"> 
+<div style="float: left; border: 20px; width: 35%; padding: 30px; font-size: 25px; margin-top: 4%"> 
+
+<ul id="myUL">
+  <li style="list-style-type:none">@lesson.Name
+      <div style="padding:0px" class="modal-footer"> </div>
+
+    <ul class="nested">
+      <li  @onmousedown="@(e =>RenderComponent(typeof(EditorLesson),lesson.Id.ToString(),null,null))"  style=" cursor:pointer">  Мета   </li>
+      <li>Теория</li>
+      <li>Блоки заданий   
+          <button type="button" class="btn btn-outline-success btn-sm" style=" cursor:pointer" @onclick="() => OpenAddBlockDialog()"> ✚ </button>   
+      </li>
+      
+      <ul class="nested">    
+          @foreach (var block in lesson.ExerciseBlocks)
+          {       
+              <li >   
+                  <a @onmousedown="@(e => RenderComponent(typeof(EditBlock),lesson.Id.ToString(),block.Id,null))"  style="cursor:pointer">    
+                      @ToExBlock((int)block.SubType) 
+                  </a>
+                  <li>
+                      Задания
+                      <button type="button" class="btn btn-outline-success btn-sm" style=" cursor:pointer" @onclick="() => OpenAddExerciseDialog(block.Id)"> ✚ </button> 
+                  </li>
+                  <ul class="nested">
+                      
+                      @if (block.Exercises.Count == 0) { <li>Заданий нет</li> }
+                      @foreach (var ex in block.Exercises)
+                      {
+                          <li  @onmousedown="@(e => RenderComponent(typeof(EditExercise),lesson.Id.ToString(),block.Id,ex.Id))" style="cursor:pointer" >
+                               Задание № @ex.ExerciseNumber 
+                          </li>
+                      }
+                  </ul>
+              </li>
+
+              
+
+          }
+       </ul> 
+     </ul>
+  </li>
+</ul> 
+
+
+</div>
+
+<div style=" float: right; border: 20px; width: 65%; padding: 30px; font-size: 20px; margin-top: 4%; margin-left: 15px"> 
+   @CustomRender
+</div>
+
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+
+    public Lesson lesson = new Lesson();
+    public bool flag = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        lesson = await Http.GetFromJsonAsync<Lesson>($"https://localhost:7027/api/Lesson/{Id}");
+
+    }
+    public string ToExBlock(int subtype)
+    {
+        switch (subtype)
+        {
+            case 10: return "Задание на допуск";
+            case 20: return "Задание на закрепление материала";
+            case 30: return "Задание на защиту";
+            case 40: return "Эксперимент";
+            default: return "Тип блока не выбран";
+        }
+    }
+
+    private RenderFragment? CustomRender { get; set; }
+
+    private RenderFragment CreateComponent(Type componentType,string id, Guid? blockId, Guid? exId) => builder =>
+        {
+            builder.OpenComponent(0, componentType);
+            builder.AddAttribute(1, "Id", id);
+            if (blockId != null )  builder.AddAttribute(2, "blockId", blockId);
+            if(blockId!=null && exId!=null) builder.AddAttribute(3, "exerciseId", exId);
+            builder.CloseComponent();
+
+        };
+
+    private void RenderComponent(Type componentType, string id, Guid? blockId, Guid? exId)
+    {
+        CustomRender = CreateComponent(componentType, id, blockId, exId);
+    }
+
+    public bool AddBlockDialogOpen { get; set; }
+    public bool AddExerciseDialogOpen { get; set; }
+
+    private void OnAddDialogClose(bool accepted)
+    {
+        AddBlockDialogOpen = false;
+        AddExerciseDialogOpen = false;
+        StateHasChanged();
+    }
+    private void OpenAddBlockDialog()
+    {
+        AddBlockDialogOpen = true;            
+        StateHasChanged();        
+    }
+
+    public Guid blockId;
+    private void OpenAddExerciseDialog(Guid _blockId)
+    {
+        blockId = _blockId;
+        AddExerciseDialogOpen = true;            
+        StateHasChanged();        
+    }
+}

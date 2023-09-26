@@ -1,0 +1,98 @@
+﻿@page "/editorLesson/{id}"
+@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Модуль</PageTitle>
+
+<div style=" display:flex; align-items: center; justify-content: center;">
+    <EditForm class="form-signin" OnSubmit="HandleValidSubmit" Model="lesson" style="width:650px">
+        <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name">Название</label>
+                        <InputText id="name" type="text" @bind-Value="lesson.Name" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name">Тип модуля</label>
+                        <InputSelect id="type" type="text" @bind-Value="lesson.LessonType" class="form-select">                                       
+                         <option value="@LessonType.TrainingModule">Учебный модуль в рамках дисциплины</option>
+                         <option value="@LessonType.LaboratoryPracticalModule">Лабораторно-практический модуль</option>
+                         <option value="@LessonType.LaboratoryWork">Лабораторная работа</option>
+                         <option value="@LessonType.PracticalWork">Практическая работа</option>
+                         <option value="@LessonType.Colloquium">Коллоквиум</option>
+                         <option value="@LessonType.CourseProject">Курсовой проект</option>
+                         <option value="@LessonType.CourseWork">Курсовая работа</option>
+                         <option value="@LessonType.ControlWork">Контрольная работа</option>
+                    </InputSelect>
+                    </div>
+                     <div class="mb-3">
+                        <label for="name">Статус модуля</label>
+                        <InputText id="name" type="text" @bind-Value="lesson.Status" class="form-control" />
+                    </div>
+
+                    <div class="align-content-center">
+                            <label for="name">Коэффициент сложности</label>
+                        </div>
+                        <InputNumber id="name" type="int" @bind-Value="lesson.LaborIntensity" class="form-control"/>
+                        <div class="mb-3">
+                        <label for="name">Примечание</label>
+                        <InputText id="name" type="text" @bind-Value="lesson.Comments" class="form-control" />
+                    </div>
+        </div>
+            @if(flag==true)
+            {
+                <div class="alert alert-success" role="alert" >
+                   Изменения сохранены!
+                </div>
+            }
+            <div class="modal-footer">               
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+
+    public Lesson lesson = new Lesson();
+    public bool flag = false;
+
+    protected async override Task OnParametersSetAsync()
+    {
+
+        lesson = await Http.GetFromJsonAsync<Lesson>($"https://localhost:7027/api/Lesson/{Id}");
+
+    }
+    protected async Task HandleValidSubmit()
+    {
+        flag = false;
+        var res = await Http.PutAsJsonAsync($"https://localhost:7027/api/Lesson/{Id}", lesson);
+        if (res.IsSuccessStatusCode)
+        {
+            flag = true;
+        }
+
+    }
+
+    public string ToExBlock(int subtype)
+    {
+        switch (subtype)
+        {
+            case 10: return "Задание на допуск";
+            case 20: return "Задание на закрепление материала";
+            case 30: return "Задание на защиту";
+            case 40: return "Эксперимент";
+            default: return "Тип блока не выбран";
+        }
+    }
+
+    
+
+
+}

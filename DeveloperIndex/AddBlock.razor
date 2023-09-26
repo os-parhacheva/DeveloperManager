@@ -1,0 +1,86 @@
+﻿@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<div class="modal fade show" id="myModal" style="display: block; background-color: rgba(10, 10, 10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Добавить блок</h4>
+                <button type="button" class="btn btn-outline-danger" @onclick="@ModalCancel">✖</button>
+            </div>
+            <div class="modal-body">
+                <EditForm class="form-signin" OnSubmit="AddExBlock" Model="exerciseBlock">
+                    
+
+                    <div class="mb-3">
+                        <label for="name">Тип блока</label>
+                         <InputSelect id="type" type="text" @bind-Value="exerciseBlock.SubType" class="form-select"> 
+                         <option value="@SubType.Allowance">Задание на допуск</option>
+                         <option value="@SubType.ControlExercise">Задание на закрепление материала</option>
+                         <option value="@SubType.ProtectionExercise">Задание на защиту</option>
+                         <option value="@SubType.Experiment">Эксперимент</option>
+                         </InputSelect>                        
+                    </div>  
+
+                    <div class="mb-3">
+                        <label for="name">Комментарий</label>
+                        <InputText id="name" type="text" @bind-Value="exerciseBlock.Comments" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name">Контент</label>
+                         <InputSelect id="type" type="text" @bind-Value="exerciseBlock.Content.ContentType" class="form-select"> 
+                         <option value="@ContentType.Book">Книга</option>
+                         <option value="@ContentType.Document">Документ</option>
+                         <option value="@ContentType.File">Файл</option>
+                         <option value="@ContentType.Image">Изображение</option>
+                         <option value="@ContentType.Video">Видео</option>
+                         </InputSelect>                        
+                    </div>
+                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+
+    public Lesson lesson = new Lesson();
+    public ExerciseBlock exerciseBlock = new ExerciseBlock();
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        lesson = await Http.GetFromJsonAsync<Lesson>($"https://localhost:7027/api/Lesson/{Id}");
+
+    }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private async Task AddExBlock()
+    {
+        lesson.ExerciseBlocks.Add(exerciseBlock);
+       var res = await Http.PutAsJsonAsync($"https://localhost:7027/api/Lesson/{Id}", lesson);
+        if (res.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"/edit/{Id}", true);
+        }
+    }
+
+
+
+}

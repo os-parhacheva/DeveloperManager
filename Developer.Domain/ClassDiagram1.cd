@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Developer.Domain.Exercise">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="Developer.Domain.Exercise.ExerciseType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Model\Exercise.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <AssociationLine Name="ExerciseBlock" Type="Developer.Domain.ExerciseBlock" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="1.625" />
+        <Point X="5" Y="1.625" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="ExerciseVariants" Type="Developer.Domain.ExerciseVariant">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.023" Y="0.051" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Options" Type="Developer.Domain.ExerciseOption" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="1.562" />
+        <Point X="9.25" Y="1.562" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABCAAAAAgAAAgAAAAAAAIAAAAAAACEAAQAACABAAAA=</HashCode>
+      <FileName>Model\Exercise.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ExerciseBlock" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="ExerciseVariants" />
+      <Property Name="Options" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Developer.Domain.Lesson">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="ExerciseBlocks" Type="Developer.Domain.ExerciseBlock" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.25" />
+        <Point X="3.5" Y="1.25" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Subject" Type="Developer.Domain.SubjectVO" FixedFromPoint="true">
+      <Path>
+        <Point X="0.875" Y="3.401" />
+        <Point X="0.875" Y="4.5" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Agents" Type="Developer.Domain.Agent" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.562" Y="3.401" />
+        <Point X="1.562" Y="4.349" />
+        <Point X="3.5" Y="4.349" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAAAAAAAAIEAAAQAgAAAAAAAAAAABgAAIAQ=</HashCode>
+      <FileName>Model\Lesson.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Subject" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="ExerciseBlocks" />
+      <Property Name="Agents" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Developer.Domain.Agent">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <AssociationLine Name="Lesson" Type="Developer.Domain.Lesson" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="3.843" />
+        <Point X="1.688" Y="3.843" />
+        <Point X="1.688" Y="3.401" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.717" Y="0.132" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAEAAAAAACAgAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Agent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Lesson" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Developer.Domain.ExerciseVariant">
+    <Position X="9.25" Y="2.75" Width="1.5" />
+    <AssociationLine Name="Exercise" Type="Developer.Domain.Exercise">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.06" Y="0.044" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAgAAAAAAAAEAAIQAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ExerciseVariant.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Exercise" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Developer.Domain.ExerciseOption">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <AssociationLine Name="Exercise" Type="Developer.Domain.Exercise" FixedToPoint="true">
+      <Path>
+        <Point X="9.25" Y="1.188" />
+        <Point X="7.75" Y="1.188" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAIAgAAAAAAEAAAAAEAgAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ExerciseOption.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Exercise" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Developer.Domain.SubjectVO">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAIAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\SubjectVO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Developer.Domain.ExerciseBlock">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="Lesson" Type="Developer.Domain.Lesson" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="1.625" />
+        <Point X="2" Y="1.625" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Exercises" Type="Developer.Domain.Exercise" FixedToPoint="true">
+      <Path>
+        <Point X="5" Y="1.188" />
+        <Point X="6.25" Y="1.188" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>EBACAAAAAgAAAEAAAAEACAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Model\ExerciseBlock.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Lesson" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Exercises" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

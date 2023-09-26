@@ -1,0 +1,106 @@
+﻿@using Developer.Domain
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div style=" display:flex; align-items: center; justify-content: center;">
+    <EditForm class="form-signin" OnSubmit="HandleValidSubmit" Model="exerciseBlock" style="width:650px">
+        <div class="modal-body">                    
+                    <div class="mb-3">
+                        <label for="name">Блок</label>
+                         <InputSelect id="type" type="text" @bind-Value="exerciseBlock.SubType" class="form-select"> 
+                         <option value="@SubType.Allowance">Задание на допуск</option>
+                         <option value="@SubType.ControlExercise">Задание на закрепление материала</option>
+                         <option value="@SubType.ProtectionExercise">Задание на защиту</option>
+                         <option value="@SubType.Experiment">Эксперимент</option>
+                         </InputSelect>                        
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name">Тип блока</label>
+                         <InputSelect id="type" type="text" @bind-Value="exerciseBlock.SubType" class="form-select"> 
+                         <option value="@SubType.Allowance">Задание на допуск</option>
+                         <option value="@SubType.ControlExercise">Задание на закрепление материала</option>
+                         <option value="@SubType.ProtectionExercise">Задание на защиту</option>
+                         <option value="@SubType.Experiment">Эксперимент</option>
+                         </InputSelect>                        
+                    </div>
+                   
+
+                    <div class="mb-3">
+                        <label for="name">Комментарий</label>
+                        <InputText id="name" type="text" @bind-Value="exerciseBlock.Comments" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name">Контент</label>
+                         <InputSelect id="type" type="text" @bind-Value="exerciseBlock.Content.ContentType" class="form-select"> 
+                         <option value="@ContentType.Book">Книга</option>
+                         <option value="@ContentType.Document">Документ</option>
+                         <option value="@ContentType.File">Файл</option>
+                         <option value="@ContentType.Image">Изображение</option>
+                         <option value="@ContentType.Video">Видео</option>
+                         </InputSelect>                        
+                    </div>
+        </div>
+
+         @if(flag==true)
+            {
+                <div class="alert alert-success" role="alert" >
+                   Изменения сохранены!
+                </div>
+            }
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger"
+                                             @onclick="@(() => DeleteBlock(exerciseBlock))">
+                                            Удалить
+                                        </button>
+                
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+
+    </EditForm>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public Guid blockId { get; set; }
+
+    public Lesson lesson = new Lesson();
+    public ExerciseBlock exerciseBlock=new ExerciseBlock();
+
+    public bool flag = false;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        lesson = await Http.GetFromJsonAsync<Lesson>($"https://localhost:7027/api/Lesson/{Id}");
+        exerciseBlock = lesson.ExerciseBlocks.FirstOrDefault(p => p.Id == blockId);
+    }
+    protected async Task HandleValidSubmit()
+    {
+        flag = false;
+        var res = await Http.PutAsJsonAsync($"https://localhost:7027/api/Lesson/{Id}", lesson);
+        if (res.IsSuccessStatusCode)
+        {
+            flag = true;
+        }
+    }
+
+    public async Task DeleteBlock(ExerciseBlock exBlock)
+    {
+       lesson.ExerciseBlocks.Remove(exBlock);
+        
+       var res = await Http.PutAsJsonAsync($"https://localhost:7027/api/Lesson/{Id}", lesson);        
+       if (res.IsSuccessStatusCode)
+       {
+           NavigationManager.NavigateTo($"/edit/{Id}", true);
+       }
+    }
+
+}
